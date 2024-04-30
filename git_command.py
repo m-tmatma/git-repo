@@ -272,6 +272,23 @@ def _build_env(
 
     return env
 
+import sys
+
+class StdErrWrapper:
+    def __init__(self, file):
+        self.file = open(file, 'a')
+
+    def write(self, message):
+        self.file.write(message)
+        sys.stderr.write(message)
+
+    def flush(self):
+        self.file.flush()
+
+    def close(self):
+        self.file.close()
+
+wrapper = StdErrWrapper('/tmp/error_log.txt')
 
 class GitCommand:
     """Wrapper around a single git invocation."""
@@ -334,11 +351,11 @@ class GitCommand:
         command.extend(cmdv[1:])
         workdir = os.getcwd()
         calls = inspect.stack()[2:]
-        print(f'[repo] workdir : [{workdir}]', file=sys.stderr)
+        print(f'[repo] workdir : [{workdir}]', file=wrapper)
         for call in calls[:-2]:
-            print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', file=sys.stderr)
+            print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', file=wrapper)
         call = calls[-1]
-        print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', command, file=sys.stderr)
+        print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', command, file=wrapper)
         print('--------------------------------------------------')
 
         event_log = (
