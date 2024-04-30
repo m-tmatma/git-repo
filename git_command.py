@@ -30,6 +30,7 @@ from repo_trace import IsTrace
 from repo_trace import REPO_TRACE
 from repo_trace import Trace
 from wrapper import Wrapper
+import inspect
 
 
 GIT = "git"
@@ -331,6 +332,10 @@ class GitCommand:
             if "--progress" not in cmdv and "--quiet" not in cmdv:
                 command.append("--progress")
         command.extend(cmdv[1:])
+        call = inspect.stack()[2]
+        for call in inspect.stack()[2:]:
+            print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', command, file=sys.stderr)
+        print('--------------------------------------------------')
 
         event_log = (
             BaseEventLog(env=env, add_init_count=True)
