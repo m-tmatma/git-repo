@@ -332,7 +332,9 @@ class GitCommand:
             if "--progress" not in cmdv and "--quiet" not in cmdv:
                 command.append("--progress")
         command.extend(cmdv[1:])
+        workdir = os.getcwd()
         calls = inspect.stack()[2:]
+        print(f'[repo] workdir : [{workdir}]', file=sys.stderr)
         for call in calls[:-2]:
             print(f'[repo] run : [{call.filename}:{call.function}:{call.lineno}]', file=sys.stderr)
         call = calls[-1]
